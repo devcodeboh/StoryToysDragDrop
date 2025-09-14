@@ -1,35 +1,35 @@
-﻿using System;
+using System;
 using UnityEngine.UI;
 
-/// <summary>
-/// Реализация IUIService для управления кнопкой Reset.
-/// UI остаётся «тупым», только показывает/прячет кнопку и вызывает коллбек.
-/// </summary>
-public class UIService : IUIService
+namespace StoryToys.DragDrop
 {
-    private readonly Button resetButton;
-    private Action onReset;
-
-    public UIService(Button resetButton)
+    public class UIService : IUIService
     {
-        this.resetButton = resetButton;
-        this.resetButton.onClick.RemoveAllListeners();
-        this.resetButton.onClick.AddListener(HandleResetClicked);
-    }
+        private readonly Button resetButton;
+        private Action onReset;
 
-    public void ShowResetButton(bool show)
-    {
-        if (resetButton != null)
-            resetButton.gameObject.SetActive(show);
-    }
+        public UIService(Button resetButton)
+        {
+            this.resetButton = resetButton;
+            this.resetButton.onClick.RemoveAllListeners();
+            this.resetButton.onClick.AddListener(HandleResetClicked);
+        }
 
-    public void RegisterResetAction(Action onReset)
-    {
-        this.onReset = onReset;
-    }
+        public void ShowResetButton(bool show)
+        {
+            if (resetButton != null)
+                resetButton.gameObject.SetActive(show);
+        }
 
-    private void HandleResetClicked()
-    {
-        onReset?.Invoke();
+        public void RegisterResetAction(Action onReset)
+        {
+            this.onReset = onReset;
+        }
+
+        private void HandleResetClicked()
+        {
+            onReset?.Invoke();
+        }
     }
 }
+

@@ -1,6 +1,9 @@
-public interface IAudioService
+namespace StoryToys.DragDrop
 {
-    void PlayHit();
-    void PlayMiss();
+    public interface IAudioService
+    {
+        void PlayHit();
+        void PlayMiss();
+    }
 }
 

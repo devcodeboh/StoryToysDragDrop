@@ -1,27 +1,31 @@
 using UnityEngine;
 
-public class EquipStrategy : IDropStrategy
+namespace StoryToys.DragDrop
 {
-    private readonly IAudioService audio;
-    private readonly IUIService ui;
-    private readonly float speed;
-
-    public EquipStrategy(IAudioService audio, IUIService ui, float speed = 6f)
+    public class EquipStrategy : IDropStrategy
     {
-        this.audio = audio;
-        this.ui = ui;
-        this.speed = speed;
-    }
+        private readonly IAudioService audio;
+        private readonly IUIService ui;
+        private readonly float speed;
 
-    public void Execute(ItemController item, Vector3 target)
-    {
-        item.SetState(ItemController.ItemState.Equipping);
-
-        item.SmoothMove(target, speed, () =>
+        public EquipStrategy(IAudioService audio, IUIService ui, float speed = 6f)
         {
-            item.SetState(ItemController.ItemState.Equipped);
-            audio?.PlayHit();
-            ui?.ShowResetButton(true);
-        });
+            this.audio = audio;
+            this.ui = ui;
+            this.speed = speed;
+        }
+
+        public void Execute(ItemController item, Vector3 target)
+        {
+            item.SetState(ItemController.ItemState.Equipping);
+
+            item.SmoothMove(target, speed, () =>
+            {
+                item.SetState(ItemController.ItemState.Equipped);
+                audio?.PlayHit();
+                ui?.ShowResetButton(true);
+                item.StartCoroutine(item.PunchScale());
+            });
+        }
     }
 }

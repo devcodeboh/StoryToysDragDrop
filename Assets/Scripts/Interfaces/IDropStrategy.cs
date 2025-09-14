@@ -1,6 +1,9 @@
 using UnityEngine;
 
-public interface IDropStrategy
+namespace StoryToys.DragDrop
 {
-    void Execute(ItemController item, Vector3 target);
+    public interface IDropStrategy
+    {
+        void Execute(ItemController item, Vector3 target);
+    }
 }

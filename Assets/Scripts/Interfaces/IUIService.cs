@@ -1,7 +1,10 @@
 using System;
 
-public interface IUIService
+namespace StoryToys.DragDrop
 {
-    void ShowResetButton(bool show);
-    void RegisterResetAction(Action onReset);
+    public interface IUIService
+    {
+        void ShowResetButton(bool show);
+        void RegisterResetAction(Action onReset);
+    }
 }

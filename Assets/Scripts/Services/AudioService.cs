@@ -1,29 +1,32 @@
 using UnityEngine;
 
-public class AudioService : IAudioService
+namespace StoryToys.DragDrop
 {
-    private readonly AudioSource audioSource;
-    private readonly AudioClip hitClip;
-    private readonly AudioClip missClip;
-
-    public AudioService(AudioSource audioSource, AudioClip hitClip, AudioClip missClip)
+    public class AudioService : IAudioService
     {
-        this.audioSource = audioSource;
-        this.hitClip = hitClip;
-        this.missClip = missClip;
-    }
+        private readonly AudioSource audioSource;
+        private readonly AudioClip hitClip;
+        private readonly AudioClip missClip;
 
-    public void PlayHit() => PlayClip(hitClip);
+        public AudioService(AudioSource audioSource, AudioClip hitClip, AudioClip missClip)
+        {
+            this.audioSource = audioSource;
+            this.hitClip = hitClip;
+            this.missClip = missClip;
+        }
 
-    public void PlayMiss() => PlayClip(missClip);
+        public void PlayHit() => PlayClip(hitClip);
 
-    private void PlayClip(AudioClip clip)
-    {
-        if (clip == null) return;
-        if (audioSource.isPlaying && audioSource.clip == clip) return;
+        public void PlayMiss() => PlayClip(missClip);
 
-        audioSource.Stop();
-        audioSource.clip = clip;
-        audioSource.Play();
+        private void PlayClip(AudioClip clip)
+        {
+            if (clip == null) return;
+            if (audioSource.isPlaying && audioSource.clip == clip) return;
+
+            audioSource.Stop();
+            audioSource.clip = clip;
+            audioSource.Play();
+        }
     }
 }
