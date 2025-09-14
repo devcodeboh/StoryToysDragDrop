@@ -23,7 +23,11 @@ namespace StoryToys.DragDrop
         private System.Collections.IEnumerator ReturnSequence(ItemController item, Vector3 target)
         {
             yield return item.StartCoroutine(item.Shake(0.1f, 0.05f));
-            item.SmoothMove(target, speed, () => item.SetState(ItemController.ItemState.Idle));
+            item.SmoothMove(target, speed, () =>
+            {
+                item.SetState(ItemController.ItemState.Idle);
+                TutorialHintButton.ShowIfAvailable();
+            });
         }
     }
 }

@@ -73,13 +73,21 @@ namespace StoryToys.DragDrop
             var btn  = reset  ? reset.GetComponentInChildren<Button>()          : Object.FindFirstObjectByType<Button>();
             var audio= sfx    ? sfx.GetComponentInChildren<AudioSource>()       : Object.FindFirstObjectByType<AudioSource>();
 
-            // Start anchor at lower-left
+            // Start anchor at lower-left with gentle padding
             if (item)
             {
                 var cam = Camera.main; if (cam)
                 {
-                    var vp = new Vector3(0.05f, 0.05f, -cam.transform.position.z);
-                    var wp = cam.ViewportToWorldPoint(vp); wp.z = 0f;
+                    // World bottom-left
+                    var bl = cam.ViewportToWorldPoint(new Vector3(0f, 0f, -cam.transform.position.z));
+                    bl.z = 0f;
+                    // Sprite extents (half size) to keep jacket fully inside view
+                    var sr = jacket.GetComponentInChildren<SpriteRenderer>();
+                    var ex = sr ? sr.bounds.extents : Vector3.zero;
+                    // Padding as small fraction of view size
+                    float padX = cam.orthographicSize * cam.aspect * 0.08f; // ~8% width
+                    float padY = cam.orthographicSize * 0.08f;             // ~8% height
+                    var wp = new Vector3(bl.x + ex.x + padX, bl.y + ex.y + padY, 0f);
                     var anchorsRoot = GameObject.Find("Anchors") ?? new GameObject("Anchors");
                     var startAnchor = new GameObject("StartAnchor");
                     startAnchor.transform.SetParent(anchorsRoot.transform); startAnchor.transform.position = wp;
@@ -114,12 +122,10 @@ namespace StoryToys.DragDrop
             // Enable systems so GameContext.Awake runs with fields set
             systems.SetActive(true);
 
-            // Spawn tutorial on first run (lightweight, 2 steps)
-            if (PlayerPrefs.GetInt("TutorialCompleted", 0) == 0)
-            {
-                var tgo = new GameObject("Tutorial");
-                tgo.AddComponent<TutorialController>();
-            }
+            // Spawn tutorial hint button (only when not equipped)
+            var hintGO = new GameObject("TutorialHint");
+            var hint = hintGO.AddComponent<TutorialHintButton>();
+            hint.Initialize(item);
         }
     }
 }

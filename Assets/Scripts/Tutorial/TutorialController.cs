@@ -17,10 +17,14 @@ namespace StoryToys.DragDrop
         private int stepIndex = -1;
 
         private const string PrefKey = "TutorialCompleted";
+        [HideInInspector] public bool forceRun = false; // запускается даже если уже был пройден
 
         private void Start()
         {
-            if (PlayerPrefs.GetInt(PrefKey, 0) == 1) { Destroy(gameObject); return; }
+            if (!forceRun && PlayerPrefs.GetInt(PrefKey, 0) == 1) { Destroy(gameObject); return; }
+
+            // Пока идёт туториал — скрываем кнопку подсказки
+            TutorialHintButton.Hide();
 
             canvas = FindObjectOfType<Canvas>();
             if (canvas == null)
@@ -52,13 +56,7 @@ namespace StoryToys.DragDrop
             overlay.SetParent(canvas.transform, false);
             overlay.anchorMin = Vector2.zero; overlay.anchorMax = Vector2.one; overlay.offsetMin = Vector2.zero; overlay.offsetMax = Vector2.zero;
 
-            // Dim background
-            var dimGO = new GameObject("Dim", typeof(Image));
-            dimGO.transform.SetParent(overlay, false);
-            var dim = dimGO.GetComponent<Image>();
-            dim.color = new Color(0f, 0f, 0f, 0.6f);
-            var dimRT = dim.rectTransform; dimRT.anchorMin = Vector2.zero; dimRT.anchorMax = Vector2.one; dimRT.offsetMin = Vector2.zero; dimRT.offsetMax = Vector2.zero;
-            dim.raycastTarget = true;
+            // No dim background — оставляем сцену без затемнения
 
             // Message box
             var msgGO = new GameObject("Message", typeof(Image));
@@ -70,6 +68,8 @@ namespace StoryToys.DragDrop
             msgRT.anchorMin = new Vector2(0.5f, 0.15f);
             msgRT.anchorMax = new Vector2(0.5f, 0.15f);
             msgRT.anchoredPosition = Vector2.zero;
+            // Сообщение — только для отображения, не блокирует клики
+            msgBG.raycastTarget = false;
             var txtGO = new GameObject("Text", typeof(Text)); txtGO.transform.SetParent(msgGO.transform, false);
             messageText = txtGO.GetComponent<Text>();
             messageText.alignment = TextAnchor.MiddleCenter; messageText.color = Color.white; messageText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
@@ -139,6 +139,8 @@ namespace StoryToys.DragDrop
             PlayerPrefs.SetInt(PrefKey, 1);
             PlayerPrefs.Save();
             if (overlay != null) Destroy(overlay.gameObject);
+            // Показать кнопку вызова снова (если куртка не одета)
+            TutorialHintButton.ShowIfAvailable();
             Destroy(gameObject);
         }
     }

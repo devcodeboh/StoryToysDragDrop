@@ -38,6 +38,7 @@ namespace StoryToys.DragDrop
             pickOffset = transform.position - worldPos;
             SetState(ItemState.Dragging);
             if (moveCoroutine != null) { StopCoroutine(moveCoroutine); moveCoroutine = null; }
+            TutorialHintButton.Hide();
         }
 
         public void OnDrag(Vector3 worldPos)
@@ -74,6 +75,7 @@ namespace StoryToys.DragDrop
             transform.position = startTransform ? startTransform.position : startPosition;
             SetState(ItemState.Idle);
             uiService?.ShowResetButton(false);
+            TutorialHintButton.ShowIfAvailable();
         }
 
         public void SmoothMove(Vector3 target, float speed, Action onComplete)
@@ -123,4 +125,3 @@ namespace StoryToys.DragDrop
         public ItemState GetState() => state;
     }
 }
-

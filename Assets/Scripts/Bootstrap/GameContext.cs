@@ -24,9 +24,9 @@ namespace StoryToys.DragDrop
 
         private void Awake()
         {
-            if (jacket == null) jacket = FindObjectOfType<ItemController>();
-            if (resetButton == null) resetButton = FindObjectOfType<Button>();
-            if (sfxSource == null) sfxSource = FindObjectOfType<AudioSource>();
+            if (jacket == null) jacket = FindFirstObjectByType<ItemController>();
+            if (resetButton == null) resetButton = FindFirstObjectByType<Button>();
+            if (sfxSource == null) sfxSource = FindFirstObjectByType<AudioSource>();
 
             var useHit = settings && settings.hitClip ? settings.hitClip : hitClip;
             var useMiss = settings && settings.missClip ? settings.missClip : missClip;

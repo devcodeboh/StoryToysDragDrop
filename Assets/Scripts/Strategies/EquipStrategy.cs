@@ -25,6 +25,7 @@ namespace StoryToys.DragDrop
                 audio?.PlayHit();
                 ui?.ShowResetButton(true);
                 item.StartCoroutine(item.PunchScale());
+                TutorialHintButton.Hide();
             });
         }
     }
