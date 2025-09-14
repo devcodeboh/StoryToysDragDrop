@@ -1,18 +1,15 @@
-﻿using System;
+using System;
 using System.Collections;
 using UnityEngine;
 
 [RequireComponent(typeof(Collider2D))]
 public class ItemController : MonoBehaviour
 {
-    public enum ItemState { Idle, Dragging, Returning, Equipped }
+    public enum ItemState { Idle, Dragging, Returning, Equipping, Equipped }
 
     [Header("References")]
     [SerializeField] private Transform startTransform;   // точка возврата (нижний левый угол)
     [SerializeField] private Transform equipTransform;   // точка экипировки (на торсе)
-
-    [Header("Config")]
-    [SerializeField] private float defaultMoveSpeed = 6f;
 
     private IDropStrategy equipStrategy;
     private IDropStrategy returnStrategy;
@@ -59,7 +56,6 @@ public class ItemController : MonoBehaviour
     public void OnDrop(Vector3 worldPos)
     {
         if (state != ItemState.Dragging) return;
-        SetState(ItemState.Idle);
 
         Collider2D hit = Physics2D.OverlapPoint(worldPos);
         if (hit != null && hit.CompareTag("Torso"))
@@ -89,9 +85,11 @@ public class ItemController : MonoBehaviour
     }
 
     // --- Smooth move (для стратегий) ---
-    public Coroutine SmoothMove(Vector3 target, float speed, Action onComplete)
+    public void SmoothMove(Vector3 target, float speed, Action onComplete)
     {
-        return StartCoroutine(SmoothMoveRoutine(target, speed, onComplete));
+        if (moveCoroutine != null)
+            StopCoroutine(moveCoroutine);
+        moveCoroutine = StartCoroutine(SmoothMoveRoutine(target, speed, onComplete));
     }
 
     private IEnumerator SmoothMoveRoutine(Vector3 target, float speed, Action onComplete)

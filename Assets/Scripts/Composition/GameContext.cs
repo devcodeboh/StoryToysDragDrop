@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
@@ -42,7 +42,6 @@ public class GameContext : MonoBehaviour
         uiService.RegisterResetAction(() =>
         {
             jacket.ResetImmediate();
-            uiService.ShowResetButton(false);
         });
 
         // --- По умолчанию кнопка скрыта ---

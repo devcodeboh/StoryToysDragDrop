@@ -1,12 +1,10 @@
 using UnityEngine;
 
-
 public class AudioService : IAudioService
 {
     private readonly AudioSource audioSource;
     private readonly AudioClip hitClip;
     private readonly AudioClip missClip;
-
 
     public AudioService(AudioSource audioSource, AudioClip hitClip, AudioClip missClip)
     {
@@ -15,22 +13,17 @@ public class AudioService : IAudioService
         this.missClip = missClip;
     }
 
+    public void PlayHit() => PlayClip(hitClip);
 
-    public void PlayHit()
+    public void PlayMiss() => PlayClip(missClip);
+
+    private void PlayClip(AudioClip clip)
     {
-        if (hitClip is null) return;
-        audioSource.Stop();
-        audioSource.clip = hitClip;
-        audioSource.Play();
-    }
+        if (clip == null) return;
+        if (audioSource.isPlaying && audioSource.clip == clip) return;
 
-
-    public void PlayMiss()
-    {
-        if (missClip == null) return;
-        if (audioSource.isPlaying && audioSource.clip == missClip) return;
         audioSource.Stop();
-        audioSource.clip = missClip;
+        audioSource.clip = clip;
         audioSource.Play();
     }
 }

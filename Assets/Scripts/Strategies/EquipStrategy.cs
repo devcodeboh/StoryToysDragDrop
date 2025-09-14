@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 public class EquipStrategy : IDropStrategy
 {
@@ -15,6 +15,8 @@ public class EquipStrategy : IDropStrategy
 
     public void Execute(ItemController item, Vector3 target)
     {
+        item.SetState(ItemController.ItemState.Equipping);
+
         item.SmoothMove(target, speed, () =>
         {
             item.SetState(ItemController.ItemState.Equipped);
