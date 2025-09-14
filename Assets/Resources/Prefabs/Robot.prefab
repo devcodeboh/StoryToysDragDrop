@@ -146,8 +146,8 @@ MonoBehaviour:
   closeTime: 0.02
   holdClosedTime: 0.01
   openTime: 0.08
-  intervalMin: 1
-  intervalMax: 2.5
+  intervalMin: 0.5
+  intervalMax: 2
   sortingOrderOffset: 20
 --- !u!1 &4325075553549668490
 GameObject:

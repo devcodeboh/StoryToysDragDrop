@@ -10,13 +10,18 @@ namespace StoryToys.DragDrop
         private EquipSlot hoverSlot;
         [SerializeField] private float slotProximity = 0.6f;
         [SerializeField] private float visibilityRange = 2.0f;
-        [SerializeField, Range(0f,1f)] private float minLevelOnDrag = 0.12f;
+        [SerializeField, Range(0f,1f)] private float minLevelOnDrag = 0.40f; // яркий базовый свет сразу после захвата
+        [SerializeField, Range(0.1f,1f)] private float approachBoostExp = 0.5f; // <1 => усиливает при приближении
+        [SerializeField, Range(0f,1f)] private float progressBoostExp = 0.6f; // буст по прогрессу пути к цели
         private EquipSlot[] slots;
+        private EquipSlot primarySlot;
+        private float pickDistanceRef = -1f; // дистанция от точки захвата до цели (anchor)
 
         private void Awake()
         {
             mainCam = Camera.main; if (mainCam == null) mainCam = Camera.current;
             slots = Object.FindObjectsOfType<EquipSlot>();
+            primarySlot = (slots != null && slots.Length > 0) ? slots[0] : null;
         }
 
         private void Update()
@@ -41,7 +46,7 @@ namespace StoryToys.DragDrop
                         case TouchPhase.Ended:
                         case TouchPhase.Canceled:
                             if (currentItem != null && activeTouchId == touch.fingerId)
-                            { ClearHover(); currentItem.OnDrop(wp); currentItem = null; activeTouchId = -1; }
+                            { ClearHover(); currentItem.OnDrop(wp); currentItem = null; activeTouchId = -1; pickDistanceRef = -1f; }
                             break;
                     }
                 }
@@ -61,7 +66,10 @@ namespace StoryToys.DragDrop
             }
 
             if (Input.GetMouseButtonUp(0) && currentItem != null && activeTouchId == -1)
-            { ClearHover(); currentItem.OnDrop(ScreenToWorld(Input.mousePosition)); currentItem = null; }
+            {
+                var wpUp = ScreenToWorld(Input.mousePosition);
+                ClearHover(); currentItem.OnDrop(wpUp); currentItem = null; pickDistanceRef = -1f;
+            }
         }
 
         private void TryPick(Vector3 worldPos, int touchId)
@@ -71,7 +79,14 @@ namespace StoryToys.DragDrop
             var item = hit.GetComponent<ItemController>() ?? hit.GetComponentInParent<ItemController>();
             if (item == null) return;
             if (item.GetState() != ItemController.ItemState.Idle) return;
+            if (!TutorialGate.AllowPick(item)) return;
             currentItem = item; activeTouchId = touchId; currentItem.OnPick(worldPos);
+            if (primarySlot != null)
+            {
+                var target = primarySlot.anchor != null ? primarySlot.anchor.position : primarySlot.transform.position;
+                pickDistanceRef = Vector3.Distance(currentItem.transform.position, target);
+                if (pickDistanceRef < 0.0001f) pickDistanceRef = 0.0001f;
+            }
         }
 
         private void UpdateHoverByProximity(ItemController item, bool justPicked)
@@ -91,11 +106,18 @@ namespace StoryToys.DragDrop
             if (newSlot != null)
             {
                 float closeRange = Mathf.Max(0.0001f, slotProximity);
-                float farRange = Mathf.Max(closeRange, visibilityRange);
                 float nearFactor = best <= 0f ? 1f : Mathf.Clamp01(1f - (best / closeRange));
-                float farFactor = Mathf.Clamp01(1f - (best / farRange));
-                float baseline = (currentItem != null) ? minLevelOnDrag : 0f;
-                level = Mathf.Max(nearFactor, farFactor * baseline);
+                float boosted = Mathf.Pow(nearFactor, approachBoostExp);
+                float baseline = (currentItem != null) ? minLevelOnDrag : 0f; // сразу светится после захвата
+                float progress = 0f;
+                if (currentItem != null && primarySlot != null && pickDistanceRef > 0f)
+                {
+                    var target = primarySlot.anchor != null ? primarySlot.anchor.position : primarySlot.transform.position;
+                    float cur = Vector3.Distance(currentItem.transform.position, target);
+                    progress = Mathf.Clamp01(1f - (cur / pickDistanceRef));
+                }
+                float progressBoost = Mathf.Pow(Mathf.Max(0f, progress), progressBoostExp);
+                level = Mathf.Max(baseline, Mathf.Max(boosted, progressBoost));
             }
 
             if (newSlot != hoverSlot)
@@ -106,7 +128,6 @@ namespace StoryToys.DragDrop
             if (hoverSlot != null)
             {
                 hoverSlot.SetHighlightLevel(level);
-                // Keep outline between Character (robot) and Clothing (jacket) — do not lift above jacket
                 hoverSlot.SetDrawOnTop(false);
             }
         }
@@ -122,3 +143,4 @@ namespace StoryToys.DragDrop
         }
     }
 }
+

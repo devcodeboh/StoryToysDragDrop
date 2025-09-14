@@ -10,6 +10,7 @@ namespace StoryToys.DragDrop.EditorTools
         private const string DragDropSettingsPath = ResourcesConfigDir + "/DragDropSettings.asset";
         private const string OutlineSettingsPath  = ResourcesConfigDir + "/OutlineSettings.asset";
         private const string RobotPrefabPath      = "Assets/Resources/Prefabs/Robot.prefab";
+        private const string TutorialStepsPath    = ResourcesConfigDir + "/TutorialSteps.asset";
 
         [MenuItem("Tools/StoryToys/Create Default Config & Assign")]
         public static void CreateAndAssign()
@@ -40,6 +41,17 @@ namespace StoryToys.DragDrop.EditorTools
                 os.alphaThreshold = 0.5f;
                 AssetDatabase.CreateAsset(os, OutlineSettingsPath);
                 Debug.Log("[CreateDefaults] Created OutlineSettings at " + OutlineSettingsPath);
+            }
+
+            // Tutorial steps asset (two-step default)
+            var ts = AssetDatabase.LoadAssetAtPath<TutorialSteps>(TutorialStepsPath);
+            if (ts == null)
+            {
+                ts = ScriptableObject.CreateInstance<TutorialSteps>();
+                ts.steps.Add(new TutorialStepData { message = "Drag the jacket", target = TutorialTarget.Jacket, gatePick = true, gateDropOnSlot = false });
+                ts.steps.Add(new TutorialStepData { message = "Drop on the torso", target = TutorialTarget.TorsoSlot, gatePick = false, gateDropOnSlot = true });
+                AssetDatabase.CreateAsset(ts, TutorialStepsPath);
+                Debug.Log("[CreateDefaults] Created TutorialSteps at " + TutorialStepsPath);
             }
 
             // Assign OutlineSettings to EquipSlot in Robot prefab if present

@@ -113,6 +113,13 @@ namespace StoryToys.DragDrop
 
             // Enable systems so GameContext.Awake runs with fields set
             systems.SetActive(true);
+
+            // Spawn tutorial on first run (lightweight, 2 steps)
+            if (PlayerPrefs.GetInt("TutorialCompleted", 0) == 0)
+            {
+                var tgo = new GameObject("Tutorial");
+                tgo.AddComponent<TutorialController>();
+            }
         }
     }
 }
