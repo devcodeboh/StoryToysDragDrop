@@ -42,6 +42,9 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Character
+    uniqueID: 1751551505
+    locked: 0
   - name: Clothes
     uniqueID: 3102246585
     locked: 0
