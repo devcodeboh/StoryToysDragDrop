@@ -11,6 +11,7 @@ namespace StoryToys.DragDrop.EditorTools
         private const string OutlineSettingsPath  = ResourcesConfigDir + "/OutlineSettings.asset";
         private const string RobotPrefabPath      = "Assets/Resources/Prefabs/Robot.prefab";
         private const string TutorialStepsPath    = ResourcesConfigDir + "/TutorialSteps.asset";
+        private const string TutorialStylePath    = ResourcesConfigDir + "/TutorialStyle.asset";
 
         [MenuItem("Tools/StoryToys/Create Default Config & Assign")]
         public static void CreateAndAssign()
@@ -52,6 +53,23 @@ namespace StoryToys.DragDrop.EditorTools
                 ts.steps.Add(new TutorialStepData { message = "Drop on the torso", target = TutorialTarget.TorsoSlot, gatePick = false, gateDropOnSlot = true });
                 AssetDatabase.CreateAsset(ts, TutorialStepsPath);
                 Debug.Log("[CreateDefaults] Created TutorialSteps at " + TutorialStepsPath);
+            }
+
+            // Tutorial style (empty, ready for user sprites)
+            var tstyle = AssetDatabase.LoadAssetAtPath<TutorialStyle>(TutorialStylePath);
+            if (tstyle == null)
+            {
+                tstyle = ScriptableObject.CreateInstance<TutorialStyle>();
+                // Light backgrounds with black text by default
+                tstyle.messageColor = new Color(0.93f, 0.93f, 0.93f, 1f);
+                tstyle.skipColor    = new Color(0.95f, 0.95f, 0.95f, 1f);
+                tstyle.messageTextColor = Color.white;
+                tstyle.skipTextColor    = Color.white;
+                tstyle.skipAnchorOffset = new Vector2(-60f, -50f);
+                tstyle.hintColor        = new Color(0.95f, 0.95f, 0.95f, 1f);
+                tstyle.hintAnchorOffset = new Vector2(-160f, -50f);
+                AssetDatabase.CreateAsset(tstyle, TutorialStylePath);
+                Debug.Log("[CreateDefaults] Created TutorialStyle at " + TutorialStylePath + ". Assign your sprites there.");
             }
 
             // Assign OutlineSettings to EquipSlot in Robot prefab if present

@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc5c9a56314353c449e3fdae3faa15ec, type: 3}
+  m_Name: TutorialStyle
+  m_EditorClassIdentifier: 
+  messageBackground: {fileID: 21300000, guid: 62bc3b0b5a5a4aa49a16e82f2c5a7a61, type: 3}
+  messageColor: {r: 1, g: 1, b: 1, a: 1}
+  messageSize: {x: 520, y: 110}
+  messageCornerRadius: 18
+  skipBackground: {fileID: 21300000, guid: 65c8607fb9e4ac7449ee5de06c0f9e3c, type: 3}
+  skipColor: {r: 1, g: 1, b: 1, a: 1}
+  skipSize: {x: 100, y: 40}
+  skipCornerRadius: 12

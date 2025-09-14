@@ -17,8 +17,8 @@ namespace StoryToys.DragDrop
             Instance = this;
             jacket = item;
             BuildUI();
-            // Show if not equipped
-            if (jacket != null && jacket.GetState() != ItemController.ItemState.Equipped)
+            // Show if not equipped and tutorial not running
+            if (!TutorialGate.Active && jacket != null && jacket.GetState() != ItemController.ItemState.Equipped)
                 ShowFade(0.25f);
             else
                 HideImmediate();
@@ -33,18 +33,33 @@ namespace StoryToys.DragDrop
                 canvas = go.GetComponent<Canvas>();
                 canvas.renderMode = RenderMode.ScreenSpaceOverlay;
             }
-            var goBtn = new GameObject("TutorialButton", typeof(RectTransform), typeof(CanvasGroup), typeof(Image));
+            var style = Resources.Load<TutorialStyle>("Config/TutorialStyle");
+            var goBtn = new GameObject("TutorialButton", typeof(RectTransform), typeof(CanvasGroup));
             goBtn.transform.SetParent(canvas.transform, false);
             cg = goBtn.GetComponent<CanvasGroup>();
             cg.alpha = 0f;
             cg.interactable = false;
             cg.blocksRaycasts = false;
-            var img = goBtn.GetComponent<Image>();
-            img.color = new Color(0f, 0f, 0f, 0.65f);
+            Graphic bgGraphic;
+            if (style != null && style.hintBackground != null)
+            {
+                var img = goBtn.AddComponent<Image>();
+                img.sprite = style.hintBackground;
+                img.type = (img.sprite != null && img.sprite.border.sqrMagnitude > 0) ? Image.Type.Sliced : Image.Type.Simple;
+                bgGraphic = img;
+            }
+            else
+            {
+                var ri = goBtn.AddComponent<RoundedImage>();
+                ri.Radius = style != null ? style.hintCornerRadius : 12f;
+                bgGraphic = ri;
+            }
+            bgGraphic.color = style != null ? style.hintColor : new Color(0.95f, 0.95f, 0.95f, 1f);
             var rt = (RectTransform)goBtn.transform;
-            rt.sizeDelta = new Vector2(44, 44);
+            rt.sizeDelta = style != null ? style.hintSize : new Vector2(44, 44);
             rt.anchorMin = new Vector2(1, 1);
             rt.anchorMax = new Vector2(1, 1);
+            rt.anchoredPosition = style != null ? style.hintAnchorOffset : new Vector2(-160, -50);
             rt.anchoredPosition = new Vector2(-130, -50); // рядом с Reset
 
             var txtGO = new GameObject("Text", typeof(Text));
@@ -58,7 +73,7 @@ namespace StoryToys.DragDrop
             tr.anchorMin = Vector2.zero; tr.anchorMax = Vector2.one; tr.offsetMin = Vector2.zero; tr.offsetMax = Vector2.zero;
 
             button = goBtn.AddComponent<Button>();
-            button.targetGraphic = img;
+            button.targetGraphic = goBtn.GetComponent<Graphic>();
             button.onClick.AddListener(OnClickHint);
         }
 
@@ -112,7 +127,7 @@ namespace StoryToys.DragDrop
         // внешние хуки
         public static void ShowIfAvailable()
         {
-            if (Instance != null && Instance.jacket != null && Instance.jacket.GetState() != ItemController.ItemState.Equipped)
+            if (!TutorialGate.Active && Instance != null && Instance.jacket != null && Instance.jacket.GetState() != ItemController.ItemState.Equipped)
                 Instance.ShowFade();
         }
 

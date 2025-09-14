@@ -145,6 +145,13 @@ namespace StoryToys.DragDrop
             if (glowMaterial != null) return glowMaterial;
             if (!autoLoadGlowMaterial) return null;
             if (sharedOutlineMat != null) return sharedOutlineMat;
+            // Prefer Resources material to avoid shader stripping and instantiation at runtime
+            var res = Resources.Load<Material>("Materials/Sprite_Outline");
+            if (res != null)
+            {
+                sharedOutlineMat = res;
+                return sharedOutlineMat;
+            }
             var shader = Shader.Find(OutlineShaderPath);
             if (shader == null)
             {
